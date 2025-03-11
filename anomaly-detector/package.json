@@ -1,0 +1,25 @@
+{
+  "name": "anomaly-detector",
+  "version": "1.0.0",
+  "description": "Anomaly detection for Hammam sensors",
+  "keywords": [
+    "Anomaly",
+    "Detection"
+  ],
+  "license": "MIT",
+  "author": "Luca Casadei",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./index.ts",
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "types": "^0.1.1",
+    "typescript": "^5.8.2"
+  }
+}

@@ -2,8 +2,6 @@ services:
   dashboard:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
-    environment:
-      - VITE_PORT=${VITE_PORT}
     networks:
       - frontend-net
     volumes:
@@ -12,8 +10,6 @@ services:
   gateway:
     ports:
       - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    environment:
-      - GATEWAY_PORT=${GATEWAY_PORT}
     networks:
       - frontend-net
       - gateway-net
@@ -27,9 +23,14 @@ services:
       - database-dev:/mnt/dev/hammam/database
     networks:
       - database-net
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    env_file:
+      - .env
+  anomaly-detector:
+    build: ./anomaly-detector/.
+    ports:
+      - ${DETECTOR_PORT}:${DETECTOR_PORT}
+    networks:
+      - database-net
 
 networks:
   frontend-net:
