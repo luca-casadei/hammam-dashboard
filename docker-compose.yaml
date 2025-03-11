@@ -1,0 +1,44 @@
+services:
+  dashboard:
+    ports:
+      - ${VITE_PORT}:${VITE_PORT}
+    environment:
+      - VITE_PORT=${VITE_PORT}
+    networks:
+      - frontend-net
+    volumes:
+      - dashboard-dev:/mnt/dev/hammam/dashboard
+    build: ./dashboard/.
+  gateway:
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    environment:
+      - GATEWAY_PORT=${GATEWAY_PORT}
+    networks:
+      - frontend-net
+      - gateway-net
+    build: ./gateway/.
+  database:
+    image: mongo
+    restart: always
+    ports:
+      - ${MONGODB_PORT}:${MONGODB_PORT}
+    volumes:
+      - database-dev:/mnt/dev/hammam/database
+    networks:
+      - database-net
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+
+networks:
+  frontend-net:
+    driver: bridge
+  database-net:
+    driver: bridge
+  gateway-net:
+    driver: bridge
+
+volumes:
+  dashboard-dev:
+  database-dev:
