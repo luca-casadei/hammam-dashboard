@@ -1,2 +1,7 @@
 # NodeJS
 node_modules
+js
+
+# Java
+.gradle
+build
