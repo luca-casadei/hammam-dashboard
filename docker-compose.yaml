@@ -12,8 +12,6 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false
 
   # Anomaly History Provider (Express)
   history-anomaly-rest:
@@ -26,8 +24,18 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false
+  
+  # History provider (Express)
+  history-rest:
+    build: ./history-provider/.
+    ports:
+      - ${HISTORY_REST_PORT}:${HISTORY_REST_PORT}
+    env_file:
+      - path: .env
+        required: true
+    networks:
+      - database
+      - history-net
 
 # RabbitMQ AMQP Broker
   rabbitmq:
@@ -40,8 +48,6 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false  
 
 # AMQP Client made in Java
   amqp-client:
@@ -54,8 +60,6 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false  
   
 #MQTT Client made in Java
   mqtt-client:
@@ -64,9 +68,7 @@ services:
       - amqp-producers
     env_file:
       - path: .env
-        required: true
-      - path: prod.env
-        required: false  
+        required: true 
 
 # Gateway made in java spring
   gateway:
@@ -80,8 +82,6 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false  
 
 # MongoDB database
   database:
@@ -96,8 +96,6 @@ services:
     env_file:
       - path: .env
         required: true
-      - path: prod.env
-        required: false  
 
 # Anomaly detector made in express
   anomaly-detector:
