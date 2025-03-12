@@ -1,10 +1,9 @@
 {
-  "name": "anomaly-detector",
+  "name": "history-anomaly-provider",
   "version": "1.0.0",
-  "description": "Anomaly detection for Hammam sensors",
+  "description": "REST provider for anomaly history",
   "keywords": [
-    "Anomaly",
-    "Detection"
+    "Anomaly"
   ],
   "license": "MIT",
   "author": "Luca Casadei",
@@ -21,5 +20,8 @@
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
   }
 }
