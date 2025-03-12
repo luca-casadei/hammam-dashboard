@@ -1,19 +1,48 @@
 services:
+
+# Dashboard made in react
   dashboard:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
-    networks:
-      - frontend-net
     volumes:
       - dashboard-dev:/mnt/dev/hammam/dashboard
     build: ./dashboard/.
+    networks:
+      - gateway
+
+# RabbitMQ AMQP Broker
+  rabbitmq:
+    image: rabbitmq:4.0.7
+    ports:
+      - ${RABBIT_PORT}:${RABBIT_PORT}
+    networks:
+      - amqp-producers
+      - amqp-consumers
+
+# AMQP Client made in Java
+  amqp-client:
+    build: ./amqp-client/.
+    ports:
+      - ${AMQP_CLIENT_PORT}:${AMQP_CLIENT_PORT}
+    networks:
+      - amqp-consumers
+      - amqp-anomalydetector
+  
+#MQTT Client made in Java
+  mqtt-client:
+    build: ./mqtt-client/.
+    networks:
+      - amqp-producers
+
+# Gateway made in java spring
   gateway:
     ports:
       - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    networks:
-      - frontend-net
-      - gateway-net
     build: ./gateway/.
+    networks:
+      - gateway
+
+# MongoDB database
   database:
     image: mongo
     restart: always
@@ -21,24 +50,26 @@ services:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
       - database-dev:/mnt/dev/hammam/database
-    networks:
-      - database-net
     env_file:
       - .env
+    networks:
+      - database
+
+# Anomaly detector made in express
   anomaly-detector:
     build: ./anomaly-detector/.
     ports:
       - ${DETECTOR_PORT}:${DETECTOR_PORT}
     networks:
-      - database-net
+      - amqp-anomalydetector
+      - database
 
 networks:
-  frontend-net:
-    driver: bridge
-  database-net:
-    driver: bridge
-  gateway-net:
-    driver: bridge
+  amqp-producers:
+  amqp-consumers:
+  amqp-anomalydetector:
+  database:
+  gateway:
 
 volumes:
   dashboard-dev:
