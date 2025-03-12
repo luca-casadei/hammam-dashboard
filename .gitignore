@@ -3,8 +3,14 @@ node_modules
 package-lock.json
 js
 
+#Environment
+*.env
+.env
 
-#Java
+#Java and stuff
 .gradle
-build
-*.class
+bin
+
+#Editors and IDEs
+.vscode
+.idea
