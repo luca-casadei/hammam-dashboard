@@ -13,13 +13,27 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
+
+  # Anomaly History Provider (Express)
+  history-anomaly-rest:
+    build: ./history-anomaly-provider/.
+    ports:
+      - ${HISTORY_ANOMALY_REST_PORT}
+    networks:
+      - database
+      - history-anomaly-net
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: true
 
   # RabbitMQ AMQP Broker
   rabbitmq:
     image: rabbitmq:4.0.7
     ports:
-      - ${RABBIT_PORT}:${RABBIT_PORT}
+      - ${RABBIT_PORT}
     networks:
       - amqp-producers
       - amqp-consumers
@@ -27,13 +41,13 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
   # AMQP Client made in Java
   amqp-client:
     build: ./amqp-client/.
     ports:
-      - ${AMQP_CLIENT_PORT}:${AMQP_CLIENT_PORT}
+      - ${AMQP_CLIENT_PORT}
     networks:
       - amqp-consumers
       - amqp-anomalydetector
@@ -41,7 +55,7 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
   #MQTT Client made in Java
   mqtt-client:
@@ -52,27 +66,29 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
   # Gateway made in java spring
   gateway:
     ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+      - ${GATEWAY_PORT}
     build: ./gateway/.
     networks:
       - gateway
+      - history-anomaly-net
+      - history-net
     env_file:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
   # MongoDB database
   database:
     image: mongo
-    restart: always
+    restart: unless-stopped
     ports:
-      - ${MONGODB_PORT}:${MONGODB_PORT}
+      - ${MONGODB_PORT}
     volumes:
       - database-prod:/mnt/prod/hammam/database
     networks:
@@ -81,7 +97,7 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
   # Anomaly detector made in express
   anomaly-detector:
@@ -95,7 +111,7 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false
+        required: true
 
 networks:
   amqp-producers:
@@ -103,7 +119,8 @@ networks:
   amqp-anomalydetector:
   database:
   gateway:
-
+  history-anomaly-net:
+  history-net:
 
 volumes:
   dashboard-prod:
