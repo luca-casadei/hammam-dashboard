@@ -23,6 +23,11 @@ dependencies {
 
     // This dependency is used by the application.
     implementation(libs.guava)
+
+    //MQTT Client of HiveMQ
+    // https://mvnrepository.com/artifact/com.hivemq/hivemq-mqtt-client
+    implementation("com.hivemq:hivemq-mqtt-client:1.3.5")
+
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
