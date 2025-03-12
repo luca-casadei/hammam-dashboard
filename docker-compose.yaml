@@ -13,7 +13,21 @@ services:
       - path: .env
         required: true
       - path: prod.env
-        required: false  
+        required: false
+
+  # Anomaly History Provider (Express)
+  history-anomaly-rest:
+    build: ./history-anomaly-provider/.
+    ports:
+      - ${HISTORY_ANOMALY_REST_PORT}:${HISTORY_ANOMALY_REST_PORT}
+    networks:
+      - database
+      - history-anomaly-net
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
 
 # RabbitMQ AMQP Broker
   rabbitmq:
@@ -61,6 +75,8 @@ services:
     build: ./gateway/.
     networks:
       - gateway
+      - history-anomaly-net
+      - history-net
     env_file:
       - path: .env
         required: true
@@ -98,6 +114,8 @@ networks:
   amqp-anomalydetector:
   database:
   gateway:
+  history-anomaly-net:
+  history-net:
 
 volumes:
   dashboard-dev:
