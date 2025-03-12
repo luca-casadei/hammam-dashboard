@@ -10,3 +10,7 @@ js
 #Java and stuff
 .gradle
 bin
+
+#Editors and IDEs
+.vscode
+.idea
