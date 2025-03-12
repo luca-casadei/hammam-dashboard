@@ -10,7 +10,13 @@ js
 #Java and stuff
 .gradle
 bin
+*.class
 
 #Editors and IDEs
 .vscode
 .idea
+
+# Start scripts
+launch.sh
+launch-and-build.sh
+cleanup.sh
