@@ -1,0 +1,27 @@
+{
+  "name": "history-anomaly-provider",
+  "version": "1.0.0",
+  "description": "REST provider for anomaly history",
+  "keywords": [
+    "Anomaly"
+  ],
+  "license": "MIT",
+  "author": "Luca Casadei",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./index.ts",
+    "build": "tsc --build",
+    "start": "node ./js/index.js"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.10",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

@@ -26,8 +26,20 @@ services:
     env_file:
       - path: .env
         required: true
+  
+  # History provider (Express)
+  history-rest:
+    build: ./history-provider/.
+    ports:
+      - ${HISTORY_REST_PORT}
+    env_file:
+      - path: .env
+        required: true
       - path: prod.env
         required: true
+    networks:
+      - database
+      - history-net
 
   # RabbitMQ AMQP Broker
   rabbitmq:
