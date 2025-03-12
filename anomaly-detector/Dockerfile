@@ -2,7 +2,7 @@ FROM node:latest AS build
 WORKDIR /building
 COPY . .
 RUN npm install
-RUN npm tsc --build
+RUN npx tsc --build
 
 FROM node:latest AS run
 WORKDIR /detector

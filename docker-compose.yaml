@@ -1,50 +1,109 @@
 services:
+
+  # Dashboard made in react
   dashboard:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
-    networks:
-      - frontend-net
     volumes:
-      - dashboard-prod:/mnt/dev/hammam/dashboard
+      - dashboard-prod:/mnt/prod/hammam/dashboard
     build: ./dashboard/.
+    networks:
+      - gateway
     env_file:
-      - prod.env
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  # RabbitMQ AMQP Broker
+  rabbitmq:
+    image: rabbitmq:4.0.7
+    ports:
+      - ${RABBIT_PORT}:${RABBIT_PORT}
+    networks:
+      - amqp-producers
+      - amqp-consumers
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  # AMQP Client made in Java
+  amqp-client:
+    build: ./amqp-client/.
+    ports:
+      - ${AMQP_CLIENT_PORT}:${AMQP_CLIENT_PORT}
+    networks:
+      - amqp-consumers
+      - amqp-anomalydetector
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  #MQTT Client made in Java
+  mqtt-client:
+    build: ./mqtt-client/.
+    networks:
+      - amqp-producers
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  # Gateway made in java spring
   gateway:
     ports:
-      - ${GATEWAY_PORT}
-    networks:
-      - frontend-net
-      - gateway-net
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
     build: ./gateway/.
+    networks:
+      - gateway
     env_file:
-      - prod.env
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  # MongoDB database
   database:
     image: mongo
     restart: always
     ports:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
-      - database-prod:/mnt/dev/hammam/database
+      - database-prod:/mnt/prod/hammam/database
     networks:
-      - database-net
+      - database
     env_file:
-      - prod.env
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
+
+  # Anomaly detector made in express
   anomaly-detector:
-    env_file:
-      - prod.env
     build: ./anomaly-detector/.
     ports:
       - ${DETECTOR_PORT}
     networks:
-      - database-net
+      - amqp-anomalydetector
+      - database
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: false
 
 networks:
-  frontend-net:
-    driver: bridge
-  database-net:
-    driver: bridge
-  gateway-net:
-    driver: bridge
+  amqp-producers:
+  amqp-consumers:
+  amqp-anomalydetector:
+  database:
+  gateway:
+
 
 volumes:
   dashboard-prod:

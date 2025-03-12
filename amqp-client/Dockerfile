@@ -5,5 +5,5 @@ RUN gradle build
 
 FROM eclipse-temurin:23 AS run
 WORKDIR /client
-COPY --from=build /building/app/build/libs/app.jar ./mqtt-client.jar
-CMD [ "java", "-jar", "mqtt-client.jar" ]
+COPY --from=build /building/app/build/libs/app.jar ./amqp-client.jar
+CMD [ "java", "-jar", "amqp-client.jar" ]
