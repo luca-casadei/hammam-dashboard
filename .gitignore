@@ -2,5 +2,11 @@
 node_modules
 package-lock.json
 js
+
+#Environment
 *.env
 .env
+
+#Java and stuff
+.gradle
+bin
