@@ -5,30 +5,36 @@ services:
     networks:
       - frontend-net
     volumes:
-      - dashboard-dev:/mnt/dev/hammam/dashboard
+      - dashboard-prod:/mnt/dev/hammam/dashboard
     build: ./dashboard/.
+    env_file:
+      - prod.env
   gateway:
     ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+      - ${GATEWAY_PORT}
     networks:
       - frontend-net
       - gateway-net
     build: ./gateway/.
+    env_file:
+      - prod.env
   database:
     image: mongo
     restart: always
     ports:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
-      - database-dev:/mnt/dev/hammam/database
+      - database-prod:/mnt/dev/hammam/database
     networks:
       - database-net
     env_file:
-      - .env
+      - prod.env
   anomaly-detector:
+    env_file:
+      - prod.env
     build: ./anomaly-detector/.
     ports:
-      - ${DETECTOR_PORT}:${DETECTOR_PORT}
+      - ${DETECTOR_PORT}
     networks:
       - database-net
 
@@ -41,5 +47,5 @@ networks:
     driver: bridge
 
 volumes:
-  dashboard-dev:
-  database-dev:
+  dashboard-prod:
+  database-prod:
