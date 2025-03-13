@@ -5,10 +5,10 @@ services:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
     volumes:
-      - dashboard-dev:/mnt/dev/hammam/dashboard
+      - ./dashboard:/dashboard
     build: ./dashboard/.
     networks:
-      - gateway
+      - gateway-net
     env_file:
       - path: .env
         required: true
@@ -70,18 +70,64 @@ services:
       - path: .env
         required: true 
 
-# Gateway made in java spring
+# Gateway Kong
+  kong-migrations:
+    image: kong/kong-gateway:3.9.1.0
+    command: kong migrations bootstrap
+    depends_on:
+      kong-db:
+        condition: service_healthy
+    env_file: .env 
+    networks:
+      - gateway-net
+    restart: on-failure
+
   gateway:
     ports:
-      - ${GATEWAY_PORT}:${GATEWAY_PORT}
-    build: ./gateway/.
+      - 8000:8000
+      - 8443:8443
+      - 8001:8001
+      - 8444:8444
+      - 8002:8002
+      - 8445:8445
+      - 8003:8003
+      - 8004:8004
+    image: kong/kong-gateway:3.9.1.0
     networks:
-      - gateway
+      - gateway-net
       - history-anomaly-net
       - history-net
     env_file:
       - path: .env
         required: true
+    depends_on:
+      kong-migrations:
+        condition: service_started
+
+# Gateway DB
+  kong-db:
+    ports:
+      - 5432:5432
+    env_file: .env
+    image: postgres:13
+    restart: unless-stopped
+    networks:
+      - gateway-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "kong",
+          "-U",
+          "kong"
+        ]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+    volumes:
+      - kong-data:/var/lib/postgresql/data
 
 # MongoDB database
   database:
@@ -111,10 +157,10 @@ networks:
   amqp-consumers:
   amqp-anomalydetector:
   database:
-  gateway:
+  gateway-net:
   history-anomaly-net:
   history-net:
 
 volumes:
-  dashboard-dev:
   database-dev:
+  kong-data: {}
