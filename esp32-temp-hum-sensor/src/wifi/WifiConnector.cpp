@@ -4,7 +4,6 @@
 void WifiConnector::connect()
 {
     delay(10);
-    Serial.println(String("Connecting to ") + this->ssid);
     WiFi.mode(WIFI_STA);
     WiFi.begin(this->ssid, this->password);
     while (WiFi.status() != WL_CONNECTED)
@@ -12,8 +11,6 @@ void WifiConnector::connect()
         delay(500);
         Serial.print(".");
     }
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
 }
 
 WifiConnector::WifiConnector(const char *ssid, const char *password)
@@ -22,7 +19,13 @@ WifiConnector::WifiConnector(const char *ssid, const char *password)
     this->ssid = strdup(ssid);
 }
 
-WifiConnector::~WifiConnector(){
+WifiConnector::~WifiConnector()
+{
     free(this->password);
     free(this->ssid);
+}
+
+bool WifiConnector::isConnected()
+{
+    return WiFi.isConnected();
 }
