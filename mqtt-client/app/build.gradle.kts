@@ -8,6 +8,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("com.gradleup.shadow") version "9.0.0-beta10"
 }
 
 repositories {
@@ -18,16 +19,14 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
-
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
     implementation(libs.guava)
 
-    //MQTT Client of HiveMQ
     // https://mvnrepository.com/artifact/com.hivemq/hivemq-mqtt-client
     implementation("com.hivemq:hivemq-mqtt-client:1.3.5")
-
+    implementation("io.vertx:vertx-core:4.5.13")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -39,10 +38,17 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "dma.tirocinio.casadei.MqttConsumer"
 }
 
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = application.mainClass
+    }
 }

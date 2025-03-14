@@ -36,39 +36,36 @@ services:
     networks:
       - database
       - history-net
-
-# RabbitMQ AMQP Broker
-  rabbitmq:
-    image: rabbitmq:4.0.7
-    ports:
-      - ${RABBIT_PORT}:${RABBIT_PORT}
-    networks:
-      - amqp-producers
-      - amqp-consumers
-    env_file:
-      - path: .env
-        required: true
-
-# AMQP Client made in Java
-  amqp-client:
-    build: ./amqp-client/.
-    ports:
-      - ${AMQP_CLIENT_PORT}:${AMQP_CLIENT_PORT}
-    networks:
-      - amqp-consumers
-      - amqp-anomalydetector
-    env_file:
-      - path: .env
-        required: true
   
 #MQTT Client made in Java
   mqtt-client:
     build: ./mqtt-client/.
     networks:
-      - amqp-producers
+      - mqtt-client-net
+      - mqtt-broker-net
+      - anomaly-detector-net
     env_file:
       - path: .env
-        required: true 
+        required: true
+    depends_on:
+      mqtt-broker:
+        condition: service_started
+
+
+#MQTT Broker with Eclipse Mosquitto
+  mqtt-broker:
+    networks:
+      - mqtt-broker-net
+    env_file:
+      - path: .env
+        required: true
+    image: eclipse-mosquitto:latest
+    volumes:
+      - mqtt-data:/mosquitto/data
+      - ./mosquitto/config:/mosquitto/config
+    ports:
+      - 1883:1883
+
 
 # Gateway Kong
   kong-migrations:
@@ -124,7 +121,7 @@ services:
           "kong"
         ]
       interval: 10s
-      timeout: 30s
+      timeout: 10s
       retries: 3
     volumes:
       - kong-data:/var/lib/postgresql/data
@@ -149,13 +146,13 @@ services:
     ports:
       - ${DETECTOR_PORT}:${DETECTOR_PORT}
     networks:
-      - amqp-anomalydetector
+      - anomaly-detector-net
       - database
 
 networks:
-  amqp-producers:
-  amqp-consumers:
-  amqp-anomalydetector:
+  mqtt-client-net:
+  mqtt-broker-net:
+  anomaly-detector-net:
   database:
   gateway-net:
   history-anomaly-net:
@@ -164,3 +161,4 @@ networks:
 volumes:
   database-dev:
   kong-data: {}
+  mqtt-data: {}

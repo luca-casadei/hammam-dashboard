@@ -1,15 +1,11 @@
 #include "./mqtt/MQTTManager.hpp"
 #include "constants.hpp"
 
-MQTTManager *MQTTManager::instance = nullptr;
-
-MQTTManager::MQTTManager(const char *server, uint16_t port, const char *topic)
+MQTTManager::MQTTManager(const char *server, uint16_t port, const char *topic, const char *username, const char *password)
     : m_client(m_espClient), m_server(server), m_port(port), m_topic(topic)
 {
-    if (instance == nullptr)
-    {
-        instance = this;
-    }
+    this->username = username;
+    this->password = password;
 }
 
 unsigned int MQTTManager::get_frequency()
@@ -30,7 +26,7 @@ void MQTTManager::connect()
         while (!m_client.connected())
         {
             String clientId = String(MQTT_CLIENT_ID) + String(random(0xffff), HEX);
-            if (m_client.connect(clientId.c_str()))
+            if (m_client.connect(clientId.c_str(), this->username, this->password))
             {
                 Serial.println("MQTT Connected");
                 m_client.subscribe(m_topic);
@@ -57,7 +53,7 @@ void MQTTManager::loop(void)
     this->m_client.loop();
 }
 
-void MQTTManager::publishMessage(const char *msg)
+bool MQTTManager::publishMessage(const char *msg)
 {
-    m_client.publish(m_topic, msg);
+    return m_client.publish(m_topic, msg);
 }

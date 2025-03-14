@@ -7,7 +7,7 @@
 #include "mqtt/MQTTManager.hpp"
 #include "constants.hpp"
 
-MQTTManager mqttManager(BROKER_NAME, MQTT_PORT, TOPIC_NAME);
+MQTTManager mqttManager(BROKER_NAME, MQTT_PORT, TOPIC_NAME, MQTT_USERNAME, MQTT_PASSWORD);
 TempHumSensor *tempHumSensor;
 Led *greenLed;
 
@@ -18,8 +18,8 @@ void setup()
   tempHumSensor = new TempHumSensor(DHT_PIN);
   tempHumSensor->init();
 
-  WifiConnector *wifi_connector = new WifiConnector(AP_NAME, AP_PASSWORD);
-  wifi_connector->connect();
+  WifiConnector *wifiConnector = new WifiConnector(AP_NAME, AP_PASSWORD);
+  wifiConnector->connect();
 
   greenLed = new Led(GREEN_LED_PIN);
   greenLed->init();
@@ -27,17 +27,29 @@ void setup()
   mqttManager.begin();
   mqttManager.connect();
 
-  if (wifi_connector->isConnected() && mqttManager.isConnected())
+  if (mqttManager.isConnected() && wifiConnector->isConnected())
   {
     greenLed->on();
-    Serial.println("All services connected");
   }
 
   // Unused outside of setup as its a wrapper.
-  delete wifi_connector;
+  delete wifiConnector;
 }
+
+unsigned long lastPublishTime = 0;
 
 void loop()
 {
+  const unsigned long currentTime = millis();
+  if ((currentTime - lastPublishTime) > PUBLISH_PERIOD_MILLIS)
+  {
+    const float detectedTemp = tempHumSensor->getTemperature();
+    const float detectedHumidity = tempHumSensor->getHumidity();
+    const char * tempMessage = String("TEMPERATURE: " + String(detectedTemp)).c_str();
+    const char * humMessage = String("HUMIDITY: " + String(detectedHumidity)).c_str();
+    mqttManager.publishMessage(tempMessage);
+    mqttManager.publishMessage(humMessage);
+    lastPublishTime = currentTime;
+  }
   mqttManager.loop();
 }
