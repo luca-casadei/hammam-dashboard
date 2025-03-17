@@ -8,4 +8,5 @@ public:
     void connect(void);
     WifiConnector(const char *ssid, const char *password);
     ~WifiConnector(void);
+    bool isConnected(void);
 };

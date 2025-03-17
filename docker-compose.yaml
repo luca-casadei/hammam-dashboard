@@ -38,45 +38,38 @@ services:
     networks:
       - database
       - history-net
-
-  # RabbitMQ AMQP Broker
-  rabbitmq:
-    image: rabbitmq:4.0.7
-    ports:
-      - ${RABBIT_PORT}
-    networks:
-      - amqp-producers
-      - amqp-consumers
-    env_file:
-      - path: .env
-        required: true
-      - path: prod.env
-        required: true
-
-  # AMQP Client made in Java
-  amqp-client:
-    build: ./amqp-client/.
-    ports:
-      - ${AMQP_CLIENT_PORT}
-    networks:
-      - amqp-consumers
-      - amqp-anomalydetector
-    env_file:
-      - path: .env
-        required: true
-      - path: prod.env
-        required: true
-
-  #MQTT Client made in Java
+  
+#MQTT Client made in Java
   mqtt-client:
     build: ./mqtt-client/.
     networks:
-      - amqp-producers
+      - mqtt-client-net
+      - mqtt-broker-net
+      - anomaly-detector-net
     env_file:
       - path: .env
         required: true
-      - path: prod.env
+    depends_on:
+      mqtt-broker:
+        condition: service_started
+    volumes:
+      - ./mqtt-client:/building
+
+
+#MQTT Broker with Eclipse Mosquitto
+  mqtt-broker:
+    networks:
+      - mqtt-broker-net
+    env_file:
+      - path: .env
         required: true
+    image: eclipse-mosquitto:latest
+    volumes:
+      - mqtt-data:/mosquitto/data
+      - ./mosquitto/config:/mosquitto/config
+    ports:
+      - 1883:1883
+
 
 # Gateway Kong
   kong-migrations:
@@ -138,7 +131,7 @@ services:
           "kong"
         ]
       interval: 10s
-      timeout: 30s
+      timeout: 10s
       retries: 3
     volumes:
       - kong-data:/var/lib/postgresql/data
@@ -165,7 +158,7 @@ services:
     ports:
       - ${DETECTOR_PORT}
     networks:
-      - amqp-anomalydetector
+      - anomaly-detector-net
       - database
     env_file:
       - path: .env
@@ -174,9 +167,9 @@ services:
         required: true
 
 networks:
-  amqp-producers:
-  amqp-consumers:
-  amqp-anomalydetector:
+  mqtt-client-net:
+  mqtt-broker-net:
+  anomaly-detector-net:
   database:
   gateway-net:
   history-anomaly-net:
@@ -185,3 +178,4 @@ networks:
 volumes:
   database-prod:
   kong-data: {}
+  mqtt-data: {}
