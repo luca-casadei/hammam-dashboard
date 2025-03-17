@@ -1,6 +1,7 @@
 package dma.tirocinio.casadei.service;
 
-import dma.tirocinio.casadei.client.MQTTAgent;
+import dma.tirocinio.casadei.client.MQTTClientProvider;
+import dma.tirocinio.casadei.web.WebClientVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 
@@ -13,14 +14,18 @@ public final class MQTTServiceDeployer implements ServiceDeployer {
     private final String topic;
     private final int port;
     private final String host;
+    private final String receiverHost;
+    private final int receiverPort;
 
     public MQTTServiceDeployer(final String username, final String password, final String host,
-                               final int port, final String topic) {
+                               final int port, final String topic, final int receiverPort, final String receiverHost) {
         this.topic = topic;
         this.username = username;
         this.port = port;
         this.host = host;
         this.password = password;
+        this.receiverHost = receiverHost;
+        this.receiverPort = receiverPort;
     }
 
     @Override
@@ -28,8 +33,9 @@ public final class MQTTServiceDeployer implements ServiceDeployer {
         final Vertx vertx = Vertx.vertx();
         Future.all(
                         List.of(
-                                vertx.deployVerticle(new MQTTAgent("TEMPERATURE", host, port, username, password, topic)),
-                                vertx.deployVerticle(new MQTTAgent("HUMIDITY", host, port, username, password, topic))
+                                vertx.deployVerticle(new MQTTClientProvider("TEMPERATURE", host, port, username, password, topic)),
+                                vertx.deployVerticle(new MQTTClientProvider("HUMIDITY", host, port, username, password, topic)),
+                                vertx.deployVerticle(new WebClientVerticle(receiverHost, receiverPort))
                         )
                 ).onFailure(MQTTServiceDeployer::errorFallback)
                 .onComplete(_ -> onDeployed());

@@ -27,6 +27,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.hivemq/hivemq-mqtt-client
     implementation("com.hivemq:hivemq-mqtt-client:1.3.5")
     implementation("io.vertx:vertx-core:4.5.13")
+    // https://mvnrepository.com/artifact/io.vertx/vertx-web-client
+    implementation("io.vertx:vertx-web-client:4.5.13")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

@@ -5,3 +5,4 @@
 #define BROKER_NAME "lapcasadei-mint"
 #define TOPIC_NAME "dma-mqttsharing-casadei"
 #define PUBLISH_PERIOD_MILLIS 1000
+#define MESSAGE_BUFFER_LEN 30

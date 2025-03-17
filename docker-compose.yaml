@@ -50,6 +50,8 @@ services:
     depends_on:
       mqtt-broker:
         condition: service_started
+    volumes:
+      - ./mqtt-client:/building
 
 
 #MQTT Broker with Eclipse Mosquitto
@@ -148,6 +150,9 @@ services:
     networks:
       - anomaly-detector-net
       - database
+    volumes:
+      - ./anomaly-detector:/node/dev
+    env_file: .env
 
 networks:
   mqtt-client-net:

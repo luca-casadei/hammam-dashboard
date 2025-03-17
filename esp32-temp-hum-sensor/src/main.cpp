@@ -40,15 +40,25 @@ unsigned long lastPublishTime = 0;
 
 void loop()
 {
+  if (!mqttManager.isConnected())
+  {
+    mqttManager.connect();
+  }
   const unsigned long currentTime = millis();
   if ((currentTime - lastPublishTime) > PUBLISH_PERIOD_MILLIS)
   {
     const float detectedTemp = tempHumSensor->getTemperature();
     const float detectedHumidity = tempHumSensor->getHumidity();
-    const char * tempMessage = String("TEMPERATURE: " + String(detectedTemp)).c_str();
-    const char * humMessage = String("HUMIDITY: " + String(detectedHumidity)).c_str();
+    char *tempMessage = (char *)malloc(sizeof(char) * MESSAGE_BUFFER_LEN);
+    char *humMessage = (char *)malloc(sizeof(char) * MESSAGE_BUFFER_LEN);
+    sprintf(tempMessage, "%s: %0.2f", "TEMPERATURE", detectedTemp);
+    sprintf(humMessage, "%s: %0.2f", "HUMIDITY", detectedHumidity);
     mqttManager.publishMessage(tempMessage);
     mqttManager.publishMessage(humMessage);
+    Serial.println(tempMessage);
+    Serial.println(humMessage);
+    free(tempMessage);
+    free(humMessage);
     lastPublishTime = currentTime;
   }
   mqttManager.loop();

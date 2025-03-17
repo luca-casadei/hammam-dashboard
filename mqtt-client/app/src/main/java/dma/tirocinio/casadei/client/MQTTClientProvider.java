@@ -3,16 +3,26 @@ package dma.tirocinio.casadei.client;
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish;
+import io.vertx.core.AbstractVerticle;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public final class MQTTClientProvider {
+public final class MQTTClientProvider extends AbstractVerticle {
     private final String providerName;
     private final Mqtt5AsyncClient client;
+    private final String topic;
+    private final String username;
+    private final String password;
 
-    public MQTTClientProvider(final String providerName, final String broker, final int port) {
+    public MQTTClientProvider(final String providerName,
+                              final String broker,
+                              final int port,
+                              final String username,
+                              final String password,
+                              final String topic) {
         this.client = MqttClient.builder()
                 .useMqttVersion5()
                 .identifier(UUID.randomUUID().toString())
@@ -20,9 +30,12 @@ public final class MQTTClientProvider {
                 .serverPort(port)
                 .buildAsync();
         this.providerName = providerName;
+        this.topic = topic;
+        this.username = username;
+        this.password = password;
     }
 
-    public void connect(final String username, final String password) {
+    private void connect() {
         this.client.connectWith()
                 .simpleAuth()
                 .username(username)
@@ -31,9 +44,9 @@ public final class MQTTClientProvider {
                 .send();
     }
 
-    public void subscribe(final String topic) {
+    private void subscribe() {
         client.subscribeWith()
-                .topicFilter(topic)
+                .topicFilter(this.topic)
                 .callback(this::onMessageReceived)
                 .send();
     }
@@ -46,6 +59,15 @@ public final class MQTTClientProvider {
             //Message logging
             final Logger log = Logger.getLogger(this.getClass().getName());
             log.info("[" + providerName + "]: " + readValue);
+            //Sending to the bus
+            vertx.eventBus().send(providerName.toLowerCase(Locale.ENGLISH)  + ".send",
+                    readValue);
         }
+    }
+
+    @Override
+    public void start(){
+        this.connect();
+        this.subscribe();
     }
 }

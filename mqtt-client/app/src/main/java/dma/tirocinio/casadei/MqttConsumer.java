@@ -13,7 +13,13 @@ public final class MqttConsumer {
     }
 
     public static void main(final String[] args) {
-        final MQTTServiceDeployer deployer = new MQTTServiceDeployer(USERNAME, PASSWORD, BROKER_HOST, PORT, TOPIC);
+        final MQTTServiceDeployer deployer = new MQTTServiceDeployer(USERNAME,
+                PASSWORD,
+                BROKER_HOST,
+                PORT,
+                TOPIC,
+                Integer.parseInt(System.getenv("DETECTOR_PORT")),
+                System.getenv("DETECTOR_HOST"));
         deployer.deploy();
     }
 }
