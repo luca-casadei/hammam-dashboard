@@ -15,4 +15,5 @@ public:
     ~TempHumSensor();
     void init(void);
     float getTemperature(void);
+    float getHumidity(void);
 };
