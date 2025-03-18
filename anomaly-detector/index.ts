@@ -1,4 +1,4 @@
-import Server from "./entry-point/server/server";
+import Server from "./entry-point/server/interfaces/server";
 import ExpressServer from "./entry-point/server/express-server";
 
 import dotenv from "dotenv"

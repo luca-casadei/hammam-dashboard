@@ -135,7 +135,8 @@ services:
     ports:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
-      - database-dev:/mnt/dev/hammam/database
+      # - mongo-data:/data/db
+      - ./mongo/config/:/docker-entrypoint-initdb.d/:rx
     networks:
       - database
     env_file:
@@ -164,6 +165,6 @@ networks:
   history-net:
 
 volumes:
-  database-dev:
   kong-data: {}
   mqtt-data: {}
+  mongo-data: {}
