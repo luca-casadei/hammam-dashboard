@@ -1,6 +1,6 @@
 import TemperatureRepo from "../repository/temperature-repo";
-import { FullTemperatureReading, TemperatureReading } from "../validator/schemas/schemas";
-import { TEMPERATURE_TRESHOLDS } from "./tresholds";
+import { FullReading, TemperatureReading } from "../validator/schemas/schemas";
+import { SCORE_TRESH, TEMPERATURE_TRESHOLDS } from "./tresholds";
 
 export default class TemperatureController {
 
@@ -11,12 +11,18 @@ export default class TemperatureController {
         this.repo.init();
     }
 
-    public receive(reading: TemperatureReading): void {
-        const fullReading: FullTemperatureReading = {
-            temperature: reading.temperature,
+    public async receive(reading: TemperatureReading): Promise<void> {
+        const deviation: number = await this.repo.getStandardDeviation();
+        const average: number = await this.repo.getAverage();
+        const score: number = deviation === 0 ? (0.0) : ((reading.temperature - average) / deviation);
+        const fullReading: FullReading = {
+            reading: reading.temperature,
             sender: reading.sender,
             inThreshold: false,
-            readingDateTime: new Date()
+            readingDateTime: new Date(),
+            deviation: deviation,
+            score: score,
+            inScoreTreshold: (score < SCORE_TRESH && score > -SCORE_TRESH)
         }
         if (this.inSafeRange(reading.temperature)) {
             fullReading.inThreshold = true;

@@ -10,3 +10,5 @@ export const HUMIDITY_TRESHOLDS = {
     min: parseFloat(process.env.HUMIDITY_MIN!),
     max: parseFloat(process.env.HUMIDITY_MAX!)
 }
+
+export const SCORE_TRESH : number = parseInt(process.env.SCORE_TRESH!)

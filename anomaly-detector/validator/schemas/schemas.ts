@@ -14,12 +14,19 @@ export const HUMIDITY_SCHEMAS = {
     })
 }
 
-type ReadingWithDateTime = {
+type GenericReading = {
+    reading: number,
+    sender: string
+}
+
+type ReadingWithStats = {
     readingDateTime: Date
     inThreshold: boolean
+    deviation: number
+    score: number
+    inScoreTreshold: boolean
 }
 
 export type TemperatureReading = z.infer<typeof TEMPERATURE_SCHEMAS.postedTemperatureSchema>
 export type HumidityReading = z.infer<typeof HUMIDITY_SCHEMAS.postedHumiditySchema>
-export type FullTemperatureReading = TemperatureReading & ReadingWithDateTime
-export type FullHumidityReading = HumidityReading & ReadingWithDateTime
+export type FullReading = GenericReading & ReadingWithStats
