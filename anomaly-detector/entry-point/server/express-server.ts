@@ -1,8 +1,8 @@
-import ErrorHandlerMiddleware from "../../error/error-handler-middleware";
+import ErrorHandlerMiddleware from "../../error/middleware/error-handler-middleware";
 import HumidityRouter from "../../router/humidity-router";
 import RouterCollection from "../../router/router-collection";
 import TemperatureRouter from "../../router/temperature-router";
-import Server from "./server";
+import Server from "./interfaces/server";
 import express, { Express, json } from "express"
 
 export default class ExpressServer implements Server {

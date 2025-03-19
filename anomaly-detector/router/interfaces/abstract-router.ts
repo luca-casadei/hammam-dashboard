@@ -1,4 +1,4 @@
-import ValidatorMiddleware from "../validator/validator-middleware";
+import ValidatorMiddleware from "../../validator/middleware/validator-middleware";
 import Router from "./router";
 import { Express } from "express"
 

@@ -25,6 +25,7 @@ public class WebClientVerticle extends AbstractVerticle {
                         .sendJsonObject(
                                 new JsonObject()
                                         .put("temperature", message.body().toString())
+                                        .put("sender", "HiveMQ")
                         )
                         .onSuccess(_ -> log.info("Sent temperature message to Detector")));
         vertx.eventBus().consumer("humidity.send").handler(message ->
@@ -32,6 +33,7 @@ public class WebClientVerticle extends AbstractVerticle {
                         .sendJsonObject(
                                 new JsonObject()
                                         .put("humidity", message.body().toString())
+                                        .put("sender", "HiveMQ")
                         ).onSuccess(_ -> log.info("Sent humidity message to Detector")));
     }
 }

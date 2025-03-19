@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import z, { ZodObject, ZodRawShape, ZodSchema } from "zod"
-import Validator from "./validator";
+import Validator from "../interfaces/validator";
 
 
 export default class ValidatorMiddleware implements Validator {

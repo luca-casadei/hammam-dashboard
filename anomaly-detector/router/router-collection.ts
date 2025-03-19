@@ -1,4 +1,4 @@
-import Router from "./router";
+import Router from "./interfaces/router";
 
 export default class RouterCollection {
     private readonly routers: Router[]

@@ -8,6 +8,7 @@
 #include "constants.hpp"
 
 MQTTManager mqttManager(BROKER_NAME, MQTT_PORT, TOPIC_NAME, MQTT_USERNAME, MQTT_PASSWORD);
+WifiConnector * wifiConnector = new WifiConnector(AP_NAME, AP_PASSWORD);
 TempHumSensor *tempHumSensor;
 Led *greenLed;
 
@@ -18,7 +19,6 @@ void setup()
   tempHumSensor = new TempHumSensor(DHT_PIN);
   tempHumSensor->init();
 
-  WifiConnector *wifiConnector = new WifiConnector(AP_NAME, AP_PASSWORD);
   wifiConnector->connect();
 
   greenLed = new Led(GREEN_LED_PIN);
@@ -42,7 +42,14 @@ void loop()
 {
   if (!mqttManager.isConnected())
   {
+    greenLed->off();
+    if (!wifiConnector->isConnected()){
+      wifiConnector->connect();
+    }
     mqttManager.connect();
+  }
+  else{
+    greenLed->on();
   }
   const unsigned long currentTime = millis();
   if ((currentTime - lastPublishTime) > PUBLISH_PERIOD_MILLIS)
