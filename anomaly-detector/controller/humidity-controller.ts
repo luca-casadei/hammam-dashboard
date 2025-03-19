@@ -1,6 +1,6 @@
 import HumidityRepo from "../repository/humidity-repo";
-import { FullHumidityReading, HumidityReading } from "../validator/schemas/schemas";
-import { HUMIDITY_TRESHOLDS } from "./tresholds";
+import { FullReading, HumidityReading } from "../validator/schemas/schemas";
+import { HUMIDITY_TRESHOLDS, SCORE_TRESH } from "./tresholds";
 
 export default class HumidityController {
 
@@ -11,8 +11,19 @@ export default class HumidityController {
         this.repo.init();
     }
 
-    public receive(reading: HumidityReading): void {
-        const fullReading: FullHumidityReading = { humidity: reading.humidity, sender: reading.sender, inThreshold: false, readingDateTime: new Date() }
+    public async receive(reading: HumidityReading): Promise<void> {
+        const deviation: number = await this.repo.getStandardDeviation();
+        const average: number = await this.repo.getAverage();
+        const score: number = deviation === 0 ? (0.0) : ((reading.humidity - average) / deviation);
+        const fullReading: FullReading = {
+            reading: reading.humidity,
+            sender: reading.sender,
+            inThreshold: false,
+            readingDateTime: new Date(),
+            deviation: deviation,
+            score: score,
+            inScoreTreshold: (score < SCORE_TRESH && score > -SCORE_TRESH)
+        }
         if (this.inSafeRange(reading.humidity)) {
             fullReading.inThreshold = true;
         }
