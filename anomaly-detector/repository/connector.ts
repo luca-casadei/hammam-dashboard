@@ -13,9 +13,9 @@ export const collectionConfiguration = {
     }
 }
 
-export default class Repository {
+export default class DbConnector {
     private readonly client: MongoClient;
-    private static instance: Repository;
+    private static instance: DbConnector;
 
     private static connectionString: string = "mongodb://"
         + process.env.MONGO_USER!
@@ -23,13 +23,13 @@ export default class Repository {
         + "@database:" + process.env.MONGODB_PORT! + "/" + process.env.MONGO_INITDB_DATABASE!;
 
     private constructor() {
-        this.client = new MongoClient(Repository.connectionString);
+        this.client = new MongoClient(DbConnector.connectionString);
     }
-    public static getInstance(): Repository {
-        if (Repository.instance == undefined) {
-            Repository.instance = new Repository();
+    public static getInstance(): DbConnector {
+        if (DbConnector.instance == undefined) {
+            DbConnector.instance = new DbConnector();
         }
-        return Repository.instance;
+        return DbConnector.instance;
     }
     public getClient(): MongoClient {
         return this.client;
