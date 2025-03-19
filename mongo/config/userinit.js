@@ -12,6 +12,18 @@ try{
             ]
         }
     );
+    db.createUser(
+        {
+            user: "reader",
+            pwd: "readerpass",
+            roles: [
+                {
+                    role: "read",
+                    db: "readings"
+                }
+            ]
+        }
+    )
     print("FINISHED CREATING USER");
     print(db.getUsers());
 } catch(error){

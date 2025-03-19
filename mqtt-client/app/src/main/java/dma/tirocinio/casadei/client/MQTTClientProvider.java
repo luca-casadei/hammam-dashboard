@@ -55,18 +55,21 @@ public final class MQTTClientProvider extends AbstractVerticle {
         final String gottenMessage = new String(message.getPayloadAsBytes(), StandardCharsets.UTF_8);
         if (gottenMessage.startsWith(this.providerName)) {
             final String filteredMessage = gottenMessage.substring(gottenMessage.indexOf(':') + 1).trim();
-            final double readValue = Double.parseDouble(filteredMessage);
-            //Message logging
             final Logger log = Logger.getLogger(this.getClass().getName());
-            log.info("[" + providerName + "]: " + readValue);
-            //Sending to the bus
-            vertx.eventBus().send(providerName.toLowerCase(Locale.ENGLISH)  + ".send",
-                    readValue);
+            try {
+                final double readValue = Double.parseDouble(filteredMessage);
+                log.info("[" + providerName + "]: " + readValue);
+                //Sending to the bus
+                vertx.eventBus().send(providerName.toLowerCase(Locale.ENGLISH) + ".send",
+                        readValue);
+            } catch (NumberFormatException ex) {
+                log.warning(ex.getMessage());
+            }
         }
     }
 
     @Override
-    public void start(){
+    public void start() {
         this.connect();
         this.subscribe();
     }

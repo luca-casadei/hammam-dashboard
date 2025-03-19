@@ -2,7 +2,7 @@ import { Request, NextFunction, Response } from "express";
 import { ZodError } from "zod";
 import ErrorHandler from "../error-handler";
 import { MongoServerError } from "mongodb";
-import DbConnector from "../../repository/connector";
+import Repository from "../../repository/repository";
 
 export default class ErrorHandlerMiddleware implements ErrorHandler {
     private static instance: ErrorHandlerMiddleware;
@@ -18,7 +18,7 @@ export default class ErrorHandlerMiddleware implements ErrorHandler {
             }
             if (err instanceof MongoServerError){
                 res.status(500).send("There was an error connecting to the database.\n" + err.message);
-                DbConnector.getInstance().getClient().close();
+                Repository.getInstance().getClient().close();
                 next();
                 return;
             }

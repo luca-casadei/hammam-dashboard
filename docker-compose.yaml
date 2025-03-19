@@ -36,6 +36,8 @@ services:
     networks:
       - database
       - history-net
+    volumes:
+      - ./history-provider:/node/dev
   
 #MQTT Client made in Java
   mqtt-client:
