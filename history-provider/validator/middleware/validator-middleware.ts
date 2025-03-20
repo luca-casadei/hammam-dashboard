@@ -10,9 +10,9 @@ export default class ValidatorMiddleware implements Validator {
         this.zodSchema = z.object({});
     }
 
-    public validate(req: Request, res: Response, next: NextFunction): void {
-        const parsed: unknown = this.zodSchema.parse(req.body);
-        Object.assign(req.body, parsed);
+    public validate(part: Object, next: NextFunction): void {
+        const parsed: unknown = this.zodSchema.parse(part);
+        Object.assign(part, parsed);
         next();
     }
 

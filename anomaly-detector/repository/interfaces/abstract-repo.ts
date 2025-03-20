@@ -16,7 +16,8 @@ export default class GenericRepo implements Repo {
 
     public async init(): Promise<void> {
         const client: MongoClient = DbConnector.getInstance().getClient();
-        if (!((await (client.db().listCollections().map(c => c.name).toArray())).includes(this.collectionName))) {
+        const collections: string[] = await (client.db().listCollections().map(c => c.name).toArray())
+        if (!(collections.includes(this.collectionName))) {
             await client.db().createCollection(this.collectionName, {
                 timeseries: collectionConfiguration.timeSeriesConfig,
                 expireAfterSeconds: collectionConfiguration.expirationConfig.seconds

@@ -2,6 +2,7 @@ import express, { Express, json } from "express"
 import RouterCollection from "../router/router-collection";
 import ErrorHandlerMiddleware from "../error/middleware/error-handler-middleware";
 import Server from "./interfaces/server";
+import ReadingRouter from "../router/reading-router";
 
 export default class ExpressServer implements Server {
     private static instance: ExpressServer;
@@ -12,7 +13,7 @@ export default class ExpressServer implements Server {
         this.app = express()
         this.routerCollection = new RouterCollection(
             [
-
+                new ReadingRouter(this.app)
             ]
         );
     }

@@ -1,18 +1,4 @@
-import z from "zod";
-
-export const TEMPERATURE_SCHEMAS = {
-    postedTemperatureSchema : z.object({
-        temperature: z.coerce.number(),
-        sender: z.string()
-    })
-}
-
-export const HUMIDITY_SCHEMAS = {
-    postedHumiditySchema: z.object({
-        humidity: z.coerce.number(),
-        sender: z.string()
-    })
-}
+import z from "zod"
 
 type GenericReading = {
     reading: number,
@@ -25,8 +11,29 @@ type ReadingWithStats = {
     deviation: number
     score: number
     inScoreTreshold: boolean
+    type: string
 }
 
-export type TemperatureReading = z.infer<typeof TEMPERATURE_SCHEMAS.postedTemperatureSchema>
-export type HumidityReading = z.infer<typeof HUMIDITY_SCHEMAS.postedHumiditySchema>
-export type FullReading = GenericReading & ReadingWithStats
+export type FullReading = ReadingWithStats & GenericReading
+
+export const SCHEMAS = {
+    paginationGetSchema : z.object({
+        page: z.optional(z.number()),
+        limit: z.optional(z.number()),
+        type: z.optional(z.string()),
+        ascending: z.optional((z.preprocess((value) => {
+            const lowerValue = (value as string).toLowerCase()
+            if(lowerValue === "true"){
+                return true
+            }
+            if(lowerValue === "false"){
+                return false
+            }
+            return ""
+        }, z.boolean()))),
+        from: z.optional(z.coerce.date(z.string().datetime())),
+        to: z.optional(z.coerce.date(z.string().datetime()))
+    })
+}
+
+export type FullGetSchema = z.infer<typeof SCHEMAS.paginationGetSchema>
