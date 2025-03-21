@@ -1,16 +1,12 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { reactRouter } from "@react-router/dev/vite";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
-import dotenv from "dotenv"
-dotenv.config()
-
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
   server: {
-    port: parseInt(process.env.VITE_PORT!),
-    strictPort: true,
-    host: true,
-    origin: "http://0.0.0.0:" + process.env.VITE_PORT!,
+    host: '0.0.0.0',
+    port: 5000
   }
-})
+});

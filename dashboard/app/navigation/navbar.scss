@@ -1,0 +1,30 @@
+@use "../globals.scss" as *;
+
+.active{
+    font-weight: bold;
+}
+
+nav > ul > li {
+    text-transform: uppercase;
+}
+
+nav > ul {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    background-color: $palette-darkest;
+    color: $palette-lightest;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+}
