@@ -20,3 +20,4 @@ bin
 launch.sh
 launch-and-build.sh
 cleanup.sh
+imageshred.sh

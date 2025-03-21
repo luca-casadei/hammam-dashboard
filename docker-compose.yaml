@@ -4,14 +4,19 @@ services:
   dashboard:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
-    volumes:
-      - ./dashboard:/dashboard
-    build: ./dashboard/.
+    build:
+      context: ./dashboard/.
+      dockerfile: dev.Dockerfile
     networks:
       - gateway-net
     env_file:
       - path: .env
         required: true
+    depends_on:
+      history-rest:
+        condition: service_started
+    volumes:
+      - ./dashboard/app:/dashboard/app
 
   # Anomaly History Provider (Express)
   history-anomaly-rest:
@@ -24,6 +29,9 @@ services:
     env_file:
       - path: .env
         required: true
+    depends_on:
+      database:
+        condition: service_healthy
   
   # History provider (Express)
   history-rest:
@@ -38,6 +46,9 @@ services:
       - history-net
     volumes:
       - ./history-provider:/node/dev
+    depends_on:
+      database:
+        condition: service_healthy
   
 #MQTT Client made in Java
   mqtt-client:
@@ -144,6 +155,11 @@ services:
     env_file:
       - path: .env
         required: true
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://${MONGO_READ_USER}:${MONGO_READ_PASSWORD}@localhost:${MONGODB_PORT}/${MONGO_INITDB_DATABASE} --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
 # Anomaly detector made in express
   anomaly-detector:
@@ -156,6 +172,9 @@ services:
     volumes:
       - ./anomaly-detector:/node/dev
     env_file: .env
+    depends_on:
+      database:
+        condition: service_healthy
 
 networks:
   mqtt-client-net:
