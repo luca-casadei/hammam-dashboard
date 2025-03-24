@@ -16,23 +16,29 @@ type ReadingWithStats = {
 
 export type FullReading = ReadingWithStats & GenericReading
 
+export type MetaReading = {
+    meta: [{ totalCount: number }]
+    data: FullReading[]
+}
+
 export const SCHEMAS = {
-    paginationGetSchema : z.object({
+    paginationGetSchema: z.object({
         page: z.optional(z.number()),
         limit: z.optional(z.number()),
         type: z.optional(z.string()),
         ascending: z.optional((z.preprocess((value) => {
             const lowerValue = (value as string).toLowerCase()
-            if(lowerValue === "true"){
+            if (lowerValue === "true") {
                 return true
             }
-            if(lowerValue === "false"){
+            if (lowerValue === "false") {
                 return false
             }
             return ""
         }, z.boolean()))),
         from: z.optional(z.coerce.date(z.string().datetime())),
-        to: z.optional(z.coerce.date(z.string().datetime()))
+        to: z.optional(z.coerce.date(z.string().datetime())),
+        flatten: z.optional(z.boolean())
     })
 }
 

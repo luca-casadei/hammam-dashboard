@@ -1,4 +1,5 @@
-main {
+main > ul > li.reading {
     display: flex;
     flex-direction: row;
+    width: 90%;
 }

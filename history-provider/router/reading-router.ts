@@ -1,5 +1,5 @@
 import ReadingController from "../controller/reading-controller";
-import { FullGetSchema, FullReading, SCHEMAS } from "../validator/schemas/schemas";
+import { FullGetSchema, FullReading, MetaReading, SCHEMAS } from "../validator/schemas/schemas";
 import GenericRouter from "./interfaces/abstract-router";
 import { Express, NextFunction, Request, Response } from "express"
 
@@ -20,7 +20,7 @@ export default class ReadingRouter extends GenericRouter {
             (req, res, next) => this.getValidator().setSchema(SCHEMAS.paginationGetSchema).validate(req.query, next),
             async (req: Request<{}, {}, {}, FullGetSchema>, res: Response, next: NextFunction) => {
                 try {
-                    const records: Array<FullReading> = await this.controller.getAll(req.query);
+                    const records: MetaReading = (await this.controller.getAll(req.query));
                     res.status(200).json(records);
                 } catch (exception) {
                     next(exception)

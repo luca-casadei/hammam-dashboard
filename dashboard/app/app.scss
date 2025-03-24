@@ -1,5 +1,5 @@
 @use "tailwindcss";
-@use "./globals.scss" as *;
+@use "./scss/globals.scss" as *;
 
 html,
 body {
@@ -11,4 +11,8 @@ body {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+
+main{
+  margin-top: $outlet-margintop;
 }

@@ -1,5 +1,5 @@
 import { Document } from "mongodb";
-import { FullReading } from "../validator/schemas/schemas";
+import { FullReading, MetaReading } from "../validator/schemas/schemas";
 import DbConnector from "./connector";
 import Repository from "./interfaces/abstract-repository";
 import ReadingsPipelineBuilder from "./pipeline/mongo-pipeline-builder";
@@ -13,7 +13,7 @@ export default class ReadingRepository extends Repository {
         type?: string,
         ascending?: boolean,
         from?: Date,
-        to?: Date): Promise<Array<FullReading>> {
+        to?: Date): Promise<MetaReading> {
         const client = DbConnector.getInstance().getClient();
         const pBuilder: ReadingsPipelineBuilder = new ReadingsPipelineBuilder();
         if (type) {
@@ -29,10 +29,7 @@ export default class ReadingRepository extends Repository {
             pBuilder.addIntervalTo(to);
         }
         pBuilder.addPagination(page, limit);
-        const results = (await client.db().collection<FullReading>(this.getName()).aggregate(pBuilder.build() as Document[]).toArray()) as FullReading[]
-        return results;
-    }
-    public async getReadingInInterval(page: number, limit: number, from: Date, to: Date, type?: string) {
-
+        const results = (await client.db().collection<MetaReading>(this.getName()).aggregate(pBuilder.build() as Document[]).toArray()) as MetaReading[]
+        return results[0];
     }
 }

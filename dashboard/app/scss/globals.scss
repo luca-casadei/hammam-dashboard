@@ -1,0 +1,11 @@
+$palette-lightest: #F9F7F7;
+$palette-light: #DBE2EF;
+$palette-dark: #3F72AF;
+$palette-darkest: #112D4E;
+
+$outlet-margintop: 50px;
+
+main{
+    background-color: $palette-lightest;
+    margin-top: $outlet-margintop;
+}

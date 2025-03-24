@@ -3,6 +3,8 @@ import RouterCollection from "../router/router-collection";
 import ErrorHandlerMiddleware from "../error/middleware/error-handler-middleware";
 import Server from "./interfaces/server";
 import ReadingRouter from "../router/reading-router";
+import cors from "cors";
+import { corsConfig } from "./cors/cors-config";
 
 export default class ExpressServer implements Server {
     private static instance: ExpressServer;
@@ -27,6 +29,7 @@ export default class ExpressServer implements Server {
 
     public listen(port: number): void {
         this.app.use(json());
+        this.app.use(cors(corsConfig));
         this.routerCollection.getRouters().forEach(router => router.route());
         this.app.listen(port, () => {
             console.log("Listening on port: " + port);

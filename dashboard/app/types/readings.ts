@@ -1,4 +1,4 @@
-export type GenericReading = {
+type GenericReading = {
     reading: number,
     sender: string
 }
@@ -13,3 +13,8 @@ type ReadingWithStats = {
 }
 
 export type FullReading = GenericReading & ReadingWithStats
+
+export type MetaReading = {
+    meta: [{ totalCount: number }]
+    data: FullReading[]
+}

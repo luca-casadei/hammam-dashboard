@@ -1,11 +1,12 @@
-@use "../globals.scss" as *;
+@use "../scss/globals.scss" as *;
 
 .active{
     font-weight: bold;
 }
 
-nav > ul > li {
+nav > ul > li{
     text-transform: uppercase;
+    color: $palette-lightest;
 }
 
 nav > ul {
@@ -26,5 +27,5 @@ nav {
     top: 0;
     left: 0;
     right: 0;
-    height: 50px;
+    height: $outlet-margintop;
 }
