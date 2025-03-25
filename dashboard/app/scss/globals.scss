@@ -1,11 +1,26 @@
-$palette-lightest: #F9F7F7;
-$palette-light: #DBE2EF;
-$palette-dark: #3F72AF;
-$palette-darkest: #112D4E;
+$palette-lightest: #f9f7f7;
+$palette-light: #dbe2ef;
+$palette-dark: #3f72af;
+$palette-darkest: #112d4e;
+$warning-color: #ff9100;
 
 $outlet-margintop: 50px;
 
-main{
+main {
     background-color: $palette-lightest;
     margin-top: $outlet-margintop;
+}
+
+@mixin rounded {
+    border-radius: 5px;
+}
+
+@mixin pane-shadowed{
+    box-shadow: 2px 2px 10px $palette-dark;
+}
+
+@mixin bordered{
+    border-color: $palette-light;
+    border-style: solid;
+    border-width: 1px;
 }

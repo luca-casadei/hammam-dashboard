@@ -1,0 +1,34 @@
+@use "../../../scss/globals.scss" as *;
+
+aside.filter-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    @include pane-shadowed;
+    width: 29%;
+    padding: 20px;
+    right: 10px;
+    bottom: 10px;
+    top: 60px;
+}
+
+aside > form.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+aside > form.filter-form > input[type="submit"].btnSetFilters {
+    color: $palette-lightest;
+    background-color: $palette-darkest;
+    @include rounded;
+    padding: 10px;
+}
+
+aside > form.filter-form > input[type="submit"].btnSetFilters:hover {
+    background-color: $palette-dark;
+}
+
+aside > form.filter-form > input[type="submit"].btnSetFilters:active {
+    background-color: $palette-darkest;
+}

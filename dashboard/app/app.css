@@ -1,18 +1,17 @@
-@use "tailwindcss";
-@use "./scss/globals.scss" as *;
+@import "tailwindcss";
 
 html,
 body {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji";
-  background-color: $palette-lightest;
-  color: $palette-darkest;
-
+  color: #112d4e;
+  background-color: #f9f7f7;
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
 }
 
-main{
-  margin-top: $outlet-margintop;
+main {
+  margin-top: 20px;
+  height: 100%;
 }

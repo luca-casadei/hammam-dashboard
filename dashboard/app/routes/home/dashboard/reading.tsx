@@ -4,14 +4,14 @@ import "./scss/readings.scss"
 export default function Reading({reading}: {reading: FullReading}) {
     return (
         <li className="reading">
-            <p className="bg-red">{reading.sender}</p>
-            <p>{reading.reading}</p>
-            <p>{reading.readingDateTime.toString()}</p>
-            <p>{reading.inThreshold.toString()}</p>
-            <p>{reading.deviation}</p>
-            <p>{reading.score}</p>
-            <p>{reading.inScoreTreshold.toString()}</p>
-            <p>{reading.type}</p>
+            <p className="reading-part reading-part-single">{reading.sender}</p>
+            <p className="reading-part reading-part-single">{reading.reading}</p>
+            <p className="reading-part reading-part-double">{reading.readingDateTime.toString()}</p>
+            <p className={reading.inThreshold ? "reading-part reading-part-single" : "reading-part reading-part-single warning"}>{reading.inThreshold.toString()}</p>
+            <p className="reading-part reading-part-single">{reading.deviation.toFixed(6)}</p>
+            <p className="reading-part reading-part-single">{reading.score.toFixed(6)}</p>
+            <p className={reading.inScoreTreshold ? "reading-part reading-part-single" : "reading-part reading-part-single warning"}>{reading.inScoreTreshold.toString()}</p>
+            <p className="reading-part reading-part-single">{reading.type}</p>
         </li>
     )
 }

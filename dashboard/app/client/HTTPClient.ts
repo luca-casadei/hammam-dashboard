@@ -5,8 +5,8 @@ export default class HTTPClient {
     constructor(hostname?: string, port?: number) {
         this.baseUrl = "http://" + (hostname ?? "localhost") + ":" + (port ?? import.meta.env.VITE_GATEWAY_PORT) + "/history";
     }
-    public async getReadings(): Promise<MetaReading> {
-        const response: Response = await fetch(this.baseUrl);
+    public async getReadings(query: string): Promise<MetaReading> {
+        const response: Response = await fetch(this.baseUrl + query);
         const json : MetaReading = await response.json()
         return json;
     }

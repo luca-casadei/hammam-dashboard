@@ -8,6 +8,7 @@ type FullRoute = {
 
 export const routes: FullRoute[] = [
     { route: "/", path: "routes/home/home.tsx", display: "Home" },
+    { route: "/graphs", path: "routes/graphs/graphs.tsx", display: "Graphs" },
 ];
 
 export default routes.map(r => {

@@ -23,8 +23,8 @@ export type MetaReading = {
 
 export const SCHEMAS = {
     paginationGetSchema: z.object({
-        page: z.optional(z.number()),
-        limit: z.optional(z.number()),
+        page: z.optional(z.coerce.number()),
+        limit: z.optional(z.coerce.number()),
         type: z.optional(z.string()),
         ascending: z.optional((z.preprocess((value) => {
             const lowerValue = (value as string).toLowerCase()

@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { Route } from "../+types/home";
 import ReadingsContainer from "./dashboard/readings-container";
 import "./home.scss"
-import type { FullReading, MetaReading } from "~/types/readings";
+import type { MetaReading } from "~/types/readings";
 import HTTPClient from "~/client/HTTPClient";
+import FilterPane from "./filters/filter-pane";
+import HTTPQueryBuilder from "~/client/query-builder/interface/HTTPQueryBuilder";
+import type { Filter } from "./types/filter-types";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -13,21 +16,33 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const [readings, setReadings] = useState<readonly FullReading[]>([]);
+  const [readings, setReadings] = useState<MetaReading>({ data: [], meta: [{ totalCount: 0 }] });
+  const [filter, setFilter] = useState<Filter>({ sort: "unsorted" });
+  const client: HTTPClient = new HTTPClient();
+  const queryBuilder: HTTPQueryBuilder = new HTTPQueryBuilder();
+
   useEffect(() => {
-    getReadings()
+    console.log("Initializing dashboard components...");
+    manageSubmit();
   }, []);
 
-  async function getReadings(): Promise<void> {
-    const client: HTTPClient = new HTTPClient();
-    const meta: MetaReading = await client.getReadings();
-    console.log(meta)
-    setReadings(meta.data)
+  const manageSubmit = async () => {
+
+    if (filter.sort !== "unsorted") {
+      queryBuilder.addSorting(filter.sort === "asc");
+    }
+    const meta: MetaReading = await client.getReadings(queryBuilder.build());
+    setReadings(meta);
+  }
+
+  const manageChange = (newFilter: Filter) => {
+    setFilter(newFilter);
   }
 
   return (
     <main>
       <ReadingsContainer readings={readings} />
+      <FilterPane filter={filter} change={manageChange} apply={manageSubmit} />
     </main>
   )
 }

@@ -1,6 +1,7 @@
 type GenericReading = {
     reading: number,
-    sender: string
+    sender: string,
+    _id: number
 }
 
 type ReadingWithStats = {
