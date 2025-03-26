@@ -17,9 +17,10 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const [readings, setReadings] = useState<MetaReading>({ data: [], meta: [{ totalCount: 0 }] });
-  const [filter, setFilter] = useState<Filter>({ sort: "unsorted" });
+  const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 10 });
   const client: HTTPClient = new HTTPClient();
   const queryBuilder: HTTPQueryBuilder = new HTTPQueryBuilder();
+  const [oldPage, setOldPage] = useState<number>(1);
 
   useEffect(() => {
     console.log("Initializing dashboard components...");
@@ -27,12 +28,13 @@ export default function Home() {
   }, []);
 
   const manageSubmit = async () => {
-
     if (filter.sort !== "unsorted") {
       queryBuilder.addSorting(filter.sort === "asc");
     }
+    queryBuilder.addPagination(filter.page, filter.limit);
     const meta: MetaReading = await client.getReadings(queryBuilder.build());
     setReadings(meta);
+    setOldPage(filter.page);
   }
 
   const manageChange = (newFilter: Filter) => {
@@ -42,7 +44,7 @@ export default function Home() {
   return (
     <main>
       <ReadingsContainer readings={readings} />
-      <FilterPane filter={filter} change={manageChange} apply={manageSubmit} />
+      <FilterPane readingNo={readings.meta[0].totalCount} filter={filter} oldPage={oldPage} change={manageChange} apply={manageSubmit} />
     </main>
   )
 }

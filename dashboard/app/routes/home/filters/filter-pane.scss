@@ -12,23 +12,29 @@ aside.filter-container {
     top: 60px;
 }
 
-aside > form.filter-form {
+form.filter-form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-aside > form.filter-form > input[type="submit"].btnSetFilters {
+form.filter-form > div.form-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+form.filter-form > input[type="submit"].btnSetFilters {
     color: $palette-lightest;
     background-color: $palette-darkest;
     @include rounded;
     padding: 10px;
 }
 
-aside > form.filter-form > input[type="submit"].btnSetFilters:hover {
+form.filter-form > input[type="submit"].btnSetFilters:hover {
     background-color: $palette-dark;
 }
 
-aside > form.filter-form > input[type="submit"].btnSetFilters:active {
+form.filter-form > input[type="submit"].btnSetFilters:active {
     background-color: $palette-darkest;
 }

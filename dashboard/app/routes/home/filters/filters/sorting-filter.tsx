@@ -2,7 +2,7 @@ import "./sorting-filter.scss"
 
 export default function SortingFilter({ handler, selectedSorting }: { handler : (e: React.ChangeEvent<HTMLInputElement>) => void, selectedSorting: string }) {
     return (
-        <fieldset>
+        <fieldset className="sort-set">
             <legend>Sorting method:</legend>
             <div>
                 <label htmlFor="ascending">Ascending:</label>
