@@ -1,10 +1,7 @@
-@use "../../../../scss/globals.scss" as *;
+@use "/app/scss/globals.scss" as *;
 
 form.filter-form fieldset.sort-set {
     width: 50%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 form.filter-form fieldset.sort-set > div {

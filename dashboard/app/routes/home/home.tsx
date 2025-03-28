@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Route } from "../+types/home";
 import ReadingsContainer from "./dashboard/readings-container";
 import "./home.scss"
@@ -17,7 +17,7 @@ export function meta({ }: Route.MetaArgs) {
 
 export default function Home() {
   const [readings, setReadings] = useState<MetaReading>({ data: [], meta: [{ totalCount: 0 }] });
-  const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 10 });
+  const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 50 });
   const client: HTTPClient = new HTTPClient();
   const queryBuilder: HTTPQueryBuilder = new HTTPQueryBuilder();
   const [oldPage, setOldPage] = useState<number>(1);
@@ -31,8 +31,16 @@ export default function Home() {
     if (filter.sort !== "unsorted") {
       queryBuilder.addSorting(filter.sort === "asc");
     }
+    if (filter.dateFrom) {
+      queryBuilder.addTimeFrom(filter.dateFrom);
+    }
+    if (filter.dateTo) {
+      queryBuilder.addTimeTo(filter.dateTo);
+    }
+    console.log(filter.dateFrom, filter.dateTo)
     queryBuilder.addPagination(filter.page, filter.limit);
     const meta: MetaReading = await client.getReadings(queryBuilder.build());
+    console.log(meta)
     setReadings(meta);
     setOldPage(filter.page);
   }

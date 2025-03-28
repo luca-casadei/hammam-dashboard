@@ -1,0 +1,15 @@
+fieldset.date-selector{
+    width: 100%;
+}
+
+fieldset.date-selector .fromfields,
+fieldset.date-selector .tofields{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+fieldset.date-selector p{
+    font-weight: bold;
+    width: 10%;
+    text-align: end;
+}

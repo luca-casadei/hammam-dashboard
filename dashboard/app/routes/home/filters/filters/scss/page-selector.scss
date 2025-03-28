@@ -1,0 +1,23 @@
+@use "/app/scss/globals.scss" as *;
+
+form.filter-form fieldset.page-selector{
+    width: 50%;
+    text-align: center;
+}
+
+form.filter-form fieldset.page-selector p{
+    padding: 11px;
+}
+
+form.filter-form fieldset.page-selector div{
+    @include bordered;
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    justify-content: space-between;
+}
+
+form.filter-form fieldset.page-selector legend{
+    text-align: center;
+    width: 100%;
+}

@@ -1,4 +1,4 @@
-import "./sorting-filter.scss"
+import "./scss/sorting-filter.scss"
 
 export default function SortingFilter({ handler, selectedSorting }: { handler : (e: React.ChangeEvent<HTMLInputElement>) => void, selectedSorting: string }) {
     return (

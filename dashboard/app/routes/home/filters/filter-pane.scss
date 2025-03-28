@@ -1,4 +1,4 @@
-@use "../../../scss/globals.scss" as *;
+@use "/app/scss/globals.scss" as *;
 
 aside.filter-container {
     position: fixed;
@@ -10,6 +10,7 @@ aside.filter-container {
     right: 10px;
     bottom: 10px;
     top: 60px;
+    overflow: scroll;
 }
 
 form.filter-form {
@@ -37,4 +38,12 @@ form.filter-form > input[type="submit"].btnSetFilters:hover {
 
 form.filter-form > input[type="submit"].btnSetFilters:active {
     background-color: $palette-darkest;
+}
+
+
+fieldset{
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
