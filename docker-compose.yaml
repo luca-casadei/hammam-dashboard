@@ -65,11 +65,11 @@ services:
     image: kong/kong-gateway:3.9.1.0
     command: kong migrations bootstrap
     depends_on:
-      kong-db:
+      kong-database:
         condition: service_healthy
-    env_file: .env
+    env_file: migrations.env
     networks:
-      - gateway-mig
+      - gateway-net
     restart: on-failure
 
   gateway:
@@ -86,23 +86,28 @@ services:
     networks:
       - gateway-net
       - history-net
-      - gateway-mig
     env_file:
       - path: .env
+        required: true
+      - path: migrations.env
         required: true
     depends_on:
       kong-migrations:
         condition: service_started
 
   # Gateway DB
-  kong-db:
+  kong-database:
     ports:
       - 5432:5432
-    env_file: .env
+    env_file:
+      - path: .env
+        required: true
+      - path: migrations.env
+        required: true
     image: postgres:13
-    restart: unless-stopped
     networks:
-      - gateway-net
+      gateway-net:
+        ipv4_address: 192.168.1.2
     healthcheck:
       test: [ "CMD", "pg_isready", "-d", "kong", "-U", "kong" ]
       interval: 10s
@@ -151,10 +156,13 @@ networks:
   mqtt-broker-net:
   anomaly-detector-net:
   database:
-  gateway-net:
   history-net:
-  gateway-mig:
-
+  gateway-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1
 
 volumes:
   kong-data: {}
