@@ -3,5 +3,6 @@ export type Filter = {
     page: number,
     limit: number,
     dateFrom?: Date ,
-    dateTo?: Date
+    dateTo?: Date,
+    type: string
 }

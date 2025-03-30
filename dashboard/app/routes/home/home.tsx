@@ -16,11 +16,12 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const [readings, setReadings] = useState<MetaReading>({ data: [], meta: [{ totalCount: 0 }] });
-  const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 50 });
+  const defaultMeta : MetaReading = { data: [], meta: [{ totalCount: 0 }] };
+  const [readings, setReadings] = useState<MetaReading>(defaultMeta);
   const client: HTTPClient = new HTTPClient();
   const queryBuilder: HTTPQueryBuilder = new HTTPQueryBuilder();
   const [oldPage, setOldPage] = useState<number>(1);
+  const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 50, type: "all" });
 
   useEffect(() => {
     console.log("Initializing dashboard components...");
@@ -37,10 +38,14 @@ export default function Home() {
     if (filter.dateTo) {
       queryBuilder.addTimeTo(filter.dateTo);
     }
-    console.log(filter.dateFrom, filter.dateTo)
+    if (filter.type !== "all") {
+      queryBuilder.addType(filter.type);
+    }
     queryBuilder.addPagination(filter.page, filter.limit);
-    const meta: MetaReading = await client.getReadings(queryBuilder.build());
-    console.log(meta)
+    let meta: MetaReading = await client.getReadings(queryBuilder.build());
+    if (meta.meta[0] === undefined) {
+      meta = defaultMeta;
+    }
     setReadings(meta);
     setOldPage(filter.page);
   }

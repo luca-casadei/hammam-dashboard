@@ -5,7 +5,7 @@ type GenericReading = {
 }
 
 type ReadingWithStats = {
-    readingDateTime: Date
+    readingDateTime: string
     inThreshold: boolean
     deviation: number
     score: number
