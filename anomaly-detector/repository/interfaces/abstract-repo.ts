@@ -1,23 +1,24 @@
 import { MongoClient, Document } from "mongodb";
 import Repo from "./repo";
-import Repository, { collectionConfiguration } from "../repository";
+import DbConnector, { collectionConfiguration } from "../connector";
 import { FullReading } from "../../validator/schemas/schemas";
 
-export default abstract class GenericRepo implements Repo {
+export default class GenericRepo implements Repo {
     private readonly collectionName: string
-
-    protected constructor(name: string) {
-        this.collectionName = name;
+    public constructor() {
+        this.collectionName = "readings"
     }
 
     public async add(reading: FullReading): Promise<void> {
-        const client: MongoClient = Repository.getInstance().getClient();
+        const client: MongoClient = DbConnector.getInstance().getClient();
         await client.db().collection(this.getName()).insertOne(reading);
     }
 
     public async init(): Promise<void> {
-        const client: MongoClient = Repository.getInstance().getClient();
-        if (!((await (client.db().listCollections().map(c => c.name).toArray())).includes(this.collectionName))) {
+        const client: MongoClient = DbConnector.getInstance().getClient();
+        const collections: string[] = await (client.db().listCollections().map(c => c.name).toArray())
+        console.log(collections)
+        if (!(collections.includes(this.collectionName))) {
             await client.db().createCollection(this.collectionName, {
                 timeseries: collectionConfiguration.timeSeriesConfig,
                 expireAfterSeconds: collectionConfiguration.expirationConfig.seconds
@@ -25,9 +26,12 @@ export default abstract class GenericRepo implements Repo {
         }
     }
 
-    public async getAverage(): Promise<number> {
-        const client: MongoClient = Repository.getInstance().getClient();
-        const pipeline: Document[] = [{ $group: { _id: 1, avg: { $avg: '$reading' } } }]
+    public async getAverage(type: string): Promise<number> {
+        const client: MongoClient = DbConnector.getInstance().getClient();
+        const pipeline: Document[] = [
+            { $match: { type: type } },
+            { $group: { _id: 1, avg: { $avg: '$reading' } } }
+        ]
         const aggregation = client.db().collection(this.getName()).aggregate(pipeline)
         let average: number = 0.0;
         if (await aggregation.hasNext()) {
@@ -38,9 +42,12 @@ export default abstract class GenericRepo implements Repo {
     }
 
 
-    public async getStandardDeviation(): Promise<number> {
-        const client: MongoClient = Repository.getInstance().getClient();
-        const pipeline: Document[] = [{ $group: { _id: 1, stdDev: { $stdDevPop: '$reading' } } }]
+    public async getStandardDeviation(type: string): Promise<number> {
+        const client: MongoClient = DbConnector.getInstance().getClient();
+        const pipeline: Document[] = [
+            { $match: { type: type } },
+            { $group: { _id: 1, stdDev: { $stdDevPop: '$reading' } } }
+        ]
         const aggregation = client.db().collection(this.getName()).aggregate(pipeline)
         let deviation: number = 0.0;
         if (await aggregation.hasNext()) {

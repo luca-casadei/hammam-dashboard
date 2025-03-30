@@ -1,0 +1,29 @@
+@use "../../../../scss/globals.scss" as *;
+
+li.reading {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    @include bordered;
+    @include rounded;
+    height: 50px;
+}
+
+li > p.warning{
+    color: $warning-color;
+}
+
+li > p.reading-part{
+    overflow: hidden;
+}
+
+li>p.reading-part-single{
+    width: 10%;
+}
+
+li>p.reading-part-double{
+    width: 25%;
+}

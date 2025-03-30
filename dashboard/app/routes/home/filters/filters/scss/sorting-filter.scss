@@ -1,0 +1,26 @@
+@use "/app/scss/globals.scss" as *;
+
+form.filter-form fieldset.sort-set {
+    width: 50%;
+}
+
+form.filter-form fieldset.sort-set > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    @include bordered;
+    padding: 10px;
+}
+
+form.filter-form fieldset.sort-set > legend {
+    text-align: center;
+    width: 100%;
+}
+
+form.filter-form fieldset.sort-set > div > label {
+    width: 80%;
+}
+
+form.filter-form fieldset.sort-set > div > input{
+    width: 20%;
+}

@@ -1,0 +1,49 @@
+@use "/app/scss/globals.scss" as *;
+
+aside.filter-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    @include pane-shadowed;
+    width: 29%;
+    padding: 20px;
+    right: 10px;
+    bottom: 10px;
+    top: 60px;
+    overflow: scroll;
+}
+
+form.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+form.filter-form > div.form-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+form.filter-form > input[type="submit"].btnSetFilters {
+    color: $palette-lightest;
+    background-color: $palette-darkest;
+    @include rounded;
+    padding: 10px;
+}
+
+form.filter-form > input[type="submit"].btnSetFilters:hover {
+    background-color: $palette-dark;
+}
+
+form.filter-form > input[type="submit"].btnSetFilters:active {
+    background-color: $palette-darkest;
+}
+
+
+form.filter-form fieldset{
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}

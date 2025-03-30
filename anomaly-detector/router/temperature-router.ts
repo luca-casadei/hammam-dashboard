@@ -1,15 +1,15 @@
-import { Request, Response, Express } from "express";
+import { Request, Response, Express, NextFunction } from "express";
 import GenericRouter from "./interfaces/abstract-router";
-import { TEMPERATURE_SCHEMAS } from "../validator/schemas/schemas";
-import TemperatureController from "../controller/temperature-controller";
+import { TEMPERATURE_SCHEMAS, TemperatureReading } from "../validator/schemas/schemas";
+import Controller from "../controller/controller";
 
 export default class TemperatureRouter extends GenericRouter {
 
-    private readonly controller: TemperatureController
+    private readonly controller: Controller
 
     public constructor(app: Express) {
         super(app);
-        this.controller = new TemperatureController()
+        this.controller = new Controller("temperature")
     }
 
     override route(): void {
@@ -17,10 +17,16 @@ export default class TemperatureRouter extends GenericRouter {
     }
 
     private add(): void {
-        this.getApp().post("/temperature", (req, res, next) => this.getValidator().setSchema(TEMPERATURE_SCHEMAS.postedTemperatureSchema).validate(req, res, next),
-            (req: Request, res: Response) => {
+        this.getApp().post("/temperature",
+            (req: Request, res: Response, next: NextFunction) =>
+                this.getValidator().setSchema(TEMPERATURE_SCHEMAS.postedTemperatureSchema)
+                    .validate(req, res, next),
+            async (req: Request<{}, {}, TemperatureReading, {}>, res: Response) => {
                 console.log(req.body)
-                this.controller.receive(req.body)
+                await this.controller.receive({
+                    reading: req.body.temperature,
+                    sender: req.body.sender
+                })
                 res.status(200).send("Received");
             })
     }

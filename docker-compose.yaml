@@ -4,27 +4,15 @@ services:
   dashboard:
     ports:
       - ${VITE_PORT}:${VITE_PORT}
-    build: ./dashboard/.
-    networks:
-      - gateway-net
-    env_file:
-      - path: .env
-        required: true
-      - path: prod.env
-        required: true
+    build:
+      context: ./dashboard/.
+      dockerfile: Dockerfile
+    environment:
+      - PORT=${VITE_PORT}
+      - VITE_GATEWAY_PORT=${VITE_GATEWAY_PORT}
+    volumes:
+      - ./dashboard/app:/dashboard/app
 
-  # Anomaly History Provider (Express)
-  history-anomaly-rest:
-    build: ./history-anomaly-provider/.
-    ports:
-      - ${HISTORY_ANOMALY_REST_PORT}
-    networks:
-      - database
-      - history-anomaly-net
-    env_file:
-      - path: .env
-        required: true
-  
   # History provider (Express)
   history-rest:
     build: ./history-provider/.
@@ -38,8 +26,13 @@ services:
     networks:
       - database
       - history-net
-  
-#MQTT Client made in Java
+    volumes:
+      - ./history-provider:/node/dev
+    depends_on:
+      database:
+        condition: service_healthy
+
+  #MQTT Client made in Java
   mqtt-client:
     build: ./mqtt-client/.
     networks:
@@ -55,8 +48,7 @@ services:
     volumes:
       - ./mqtt-client:/building
 
-
-#MQTT Broker with Eclipse Mosquitto
+  #MQTT Broker with Eclipse Mosquitto
   mqtt-broker:
     networks:
       - mqtt-broker-net
@@ -70,11 +62,10 @@ services:
     ports:
       - 1883:1883
 
-
-# Gateway Kong
+  # Gateway Kong
   kong-migrations:
     image: kong/kong-gateway:3.9.1.0
-    command: kong migrations bootstrap
+    command: sh -c "sleep 30 && kong migrations bootstrap"
     depends_on:
       kong-db:
         condition: service_healthy
@@ -84,8 +75,7 @@ services:
       - path: prod.env
         required: true
     networks:
-      - gateway-net
-    restart: on-failure
+      - gateway-mig
 
   gateway:
     ports:
@@ -100,7 +90,6 @@ services:
     image: kong/kong-gateway:3.9.1.0
     networks:
       - gateway-net
-      - history-anomaly-net
       - history-net
     env_file:
       - path: .env
@@ -111,7 +100,7 @@ services:
       kong-migrations:
         condition: service_started
 
-# Gateway DB
+  # Gateway DB
   kong-db:
     ports:
       - 5432:5432
@@ -120,21 +109,14 @@ services:
     restart: unless-stopped
     networks:
       - gateway-net
+      - gateway-mig
     healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "-d",
-          "kong",
-          "-U",
-          "kong"
-        ]
+      test: [ "CMD", "pg_isready", "-d", "kong", "-U", "kong" ]
       interval: 10s
       timeout: 10s
       retries: 3
-    volumes:
-      - kong-data:/var/lib/postgresql/data
+    #volumes:
+      # - kong-data-prod:/var/lib/postgresql/data
 
   # MongoDB database
   database:
@@ -152,6 +134,11 @@ services:
         required: true
       - path: prod.env
         required: true
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://${MONGO_READ_USER}:${MONGO_READ_PASSWORD}@localhost:${MONGODB_PORT}/${MONGO_INITDB_DATABASE} --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
   # Anomaly detector made in express
   anomaly-detector:
@@ -166,6 +153,9 @@ services:
         required: true
       - path: prod.env
         required: true
+    depends_on:
+      database:
+        condition: service_healthy
 
 networks:
   mqtt-client-net:
@@ -173,10 +163,11 @@ networks:
   anomaly-detector-net:
   database:
   gateway-net:
-  history-anomaly-net:
   history-net:
+  gateway-mig:
+
 
 volumes:
   mongo-prod: {}
-  kong-data: {}
+  kong-data-prod: {}
   mqtt-data: {}

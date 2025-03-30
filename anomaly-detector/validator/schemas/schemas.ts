@@ -14,7 +14,7 @@ export const HUMIDITY_SCHEMAS = {
     })
 }
 
-type GenericReading = {
+export type GenericReading = {
     reading: number,
     sender: string
 }
@@ -25,6 +25,7 @@ type ReadingWithStats = {
     deviation: number
     score: number
     inScoreTreshold: boolean
+    type: string
 }
 
 export type TemperatureReading = z.infer<typeof TEMPERATURE_SCHEMAS.postedTemperatureSchema>
