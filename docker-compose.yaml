@@ -7,17 +7,19 @@ services:
     build:
       context: ./dashboard/.
       dockerfile: Dockerfile
-    environment:
-      - PORT=${VITE_PORT}
-      - VITE_GATEWAY_PORT=${VITE_GATEWAY_PORT}
-    volumes:
-      - ./dashboard/app:/dashboard/app
+    env_file:
+      - path: .env
+        required: true
+      - path: prod.env
+        required: true
+    networks:
+      - gateway-net
 
   # History provider (Express)
   history-rest:
     build: ./history-provider/.
     ports:
-      - ${HISTORY_REST_PORT}
+      - ${HISTORY_REST_PORT}:${HISTORY_REST_PORT}
     env_file:
       - path: .env
         required: true
@@ -67,26 +69,29 @@ services:
     image: kong/kong-gateway:3.9.1.0
     command: sh -c "sleep 30 && kong migrations bootstrap"
     depends_on:
-      kong-db:
+      kong-database:
         condition: service_healthy
     env_file:
       - path: .env
         required: true
       - path: prod.env
         required: true
+      - path: migrations.env
+        required: true
     networks:
-      - gateway-mig
+      - gateway-net
+    restart: on-failure
 
   gateway:
     ports:
-      - 8000
-      - 8443
-      - 8001
-      - 8444
-      - 8002
-      - 8445
-      - 8003
-      - 8004
+      - 8000:8000
+      - 8443:8443
+      - 8001:8001
+      - 8444:8444
+      - 8002:8002
+      - 8445:8445
+      - 8003:8003
+      - 8004:8004
     image: kong/kong-gateway:3.9.1.0
     networks:
       - gateway-net
@@ -96,34 +101,39 @@ services:
         required: true
       - path: prod.env
         required: true
+      - path: migrations.env
+        required: true
     depends_on:
       kong-migrations:
         condition: service_started
 
   # Gateway DB
-  kong-db:
+  kong-database:
     ports:
       - 5432:5432
-    env_file: .env
+    env_file:
+      - path: .env
+        required: true
+      - path: migrations.env
+        required: true
     image: postgres:13
-    restart: unless-stopped
     networks:
-      - gateway-net
-      - gateway-mig
+      gateway-net:
+        ipv4_address: 192.169.1.2
     healthcheck:
       test: [ "CMD", "pg_isready", "-d", "kong", "-U", "kong" ]
       interval: 10s
       timeout: 10s
       retries: 3
-    #volumes:
-      # - kong-data-prod:/var/lib/postgresql/data
+    volumes:
+      - kong-data-prod:/var/lib/postgresql/data
 
   # MongoDB database
   database:
     image: mongo
     restart: unless-stopped
     ports:
-      - ${MONGODB_PORT}
+      - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
       - mongo-prod:/data/db
       - ./mongo/config/:/docker-entrypoint-initdb.d/:rx
@@ -144,7 +154,7 @@ services:
   anomaly-detector:
     build: ./anomaly-detector/.
     ports:
-      - ${DETECTOR_PORT}
+      - ${DETECTOR_PORT}:${DETECTOR_PORT}
     networks:
       - anomaly-detector-net
       - database
@@ -162,10 +172,13 @@ networks:
   mqtt-broker-net:
   anomaly-detector-net:
   database:
-  gateway-net:
   history-net:
-  gateway-mig:
-
+  gateway-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.169.1.0/24
+          gateway: 192.169.1.1
 
 volumes:
   mongo-prod: {}
