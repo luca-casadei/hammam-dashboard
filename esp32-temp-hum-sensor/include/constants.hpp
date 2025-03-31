@@ -2,7 +2,7 @@
 #define MQTT_PORT 1883
 #define MQTT_PASSWORD "verga"
 #define MQTT_USERNAME "espy"
-#define BROKER_NAME "lapcasadei-mint.homenet.telecomitalia.it"
+#define BROKER_NAME "lapcasadei-mint"
 #define TOPIC_NAME "dma-mqttsharing-casadei"
 #define PUBLISH_PERIOD_MILLIS 2000
 #define MESSAGE_BUFFER_LEN 30

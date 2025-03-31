@@ -18,7 +18,7 @@ export function meta({ }: Route.MetaArgs) {
 export default function Home() {
   const defaultMeta : MetaReading = { data: [], meta: [{ totalCount: 0 }] };
   const [readings, setReadings] = useState<MetaReading>(defaultMeta);
-  const client: HTTPClient = new HTTPClient("gateway", 8000);
+  const client: HTTPClient = new HTTPClient("localhost", 8000);
   const queryBuilder: HTTPQueryBuilder = new HTTPQueryBuilder();
   const [oldPage, setOldPage] = useState<number>(1);
   const [filter, setFilter] = useState<Filter>({ sort: "unsorted", page: 1, limit: 50, type: "all" });

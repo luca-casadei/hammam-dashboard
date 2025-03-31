@@ -23,7 +23,7 @@ export default function Graphs() {
     const queryBuilder: HTTPQueryBuilder =  new HTTPQueryBuilder();
     queryBuilder.addSorting(false);
     queryBuilder.addPagination(1, 500)
-    const meta: MetaReading = await new HTTPClient("gateway", 8000).getReadings(queryBuilder.build());
+    const meta: MetaReading = await new HTTPClient("localhost", 8000).getReadings(queryBuilder.build());
     setReadings(meta);
   }
 

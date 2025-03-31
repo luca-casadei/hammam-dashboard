@@ -12,8 +12,11 @@ services:
         required: true
       - path: prod.env
         required: true
+      - path: serve.env
+        required: true
     networks:
-      - gateway-net
+      gateway-net:
+        ipv4_address: 192.169.1.10
 
   # History provider (Express)
   history-rest:
@@ -137,7 +140,7 @@ services:
     ports:
       - ${MONGODB_PORT}:${MONGODB_PORT}
     volumes:
-      - mongo-prod:/data/db
+      # - mongo-prod:/data/db
       - ./mongo/config/:/docker-entrypoint-initdb.d/:rx
     networks:
       - database
