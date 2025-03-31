@@ -26,8 +26,10 @@ services:
       - path: prod.env
         required: true
     networks:
-      - database
-      - history-net
+      database:
+      history-net:
+        ipv4_address: 192.170.1.2
+
     volumes:
       - ./history-provider:/node/dev
     depends_on:
@@ -173,6 +175,11 @@ networks:
   anomaly-detector-net:
   database:
   history-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.170.1.0/24
+          gateway: 192.170.1.1
   gateway-net:
     driver: bridge
     ipam:
